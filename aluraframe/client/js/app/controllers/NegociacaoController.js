@@ -20,6 +20,22 @@ class NegociacaoController {
         this._limpaFormulario();
     }
     
+    importaNegociacoes(){
+        let service = new NegociacaoService();
+        
+        Promise.all([
+            service.obterNegociacoesDaSemana(),
+            service.obterNegociacoesDaSemanaAnterior(),
+            service.obterNegociacoesDaSemanaRetrasada()
+        ]).then(negociacoes => {
+            negociacoes
+                .reduce((arrayAchatado, array) => arrayAchatado.concat(array), [])
+                .forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
+            this._mensagem.texto = 'Negociações importadas com sucesso';
+        })
+        .catch(erro => this._mensagem.texto = erro);
+    }
+
     apaga() {
         this._listaNegociacoes.esvazia();   
         this._mensagem.texto = 'Negociações apagadas com sucesso';
@@ -30,7 +46,6 @@ class NegociacaoController {
             DateHelper.textoParaData(this._inputData.value),
             this._inputQuantidade.value,
             this._inputValor.value,
-            this._inputQuantidade.value * this._inputValor.value
         );      
     }
 
