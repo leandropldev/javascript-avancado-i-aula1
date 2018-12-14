@@ -1,7 +1,7 @@
 class Mensagem {
 
-    constructor(texto=''){ //atribuindo valor padrão para o construtor
-        this._texto = texto;
+    constructor(texto){ //atribuindo valor padrão para o construtor
+        this._texto = texto || ''; // se texto for undefined, vai passar ''
     }
 
     get texto(){
