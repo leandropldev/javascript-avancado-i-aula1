@@ -13,6 +13,10 @@ class NegociacaoController {
         this._mensagem = new Bind(new Mensagem, new MensagemView($('#mensagemView')), 'texto');
         this._ordemAtual = ''; 
 
+        this._init();
+    }
+    
+    _init(){
         //preenchendo a tabela com dados do IndexDB
         ConnectionFactory.getConnection()
             .then(connection => new NegociacaoDAO(connection).listaTodos())
@@ -23,6 +27,10 @@ class NegociacaoController {
                 console.log(erro);
                 this._mensagem.texto = erro;
             });
+    
+        setInterval(() => {
+            this.importaNegociacoes(); 
+        }, 3000);         
     }
 
     apaga() {
@@ -53,10 +61,16 @@ class NegociacaoController {
     importaNegociacoes(){
         let service = new NegociacaoService();
         service.obterNegociacoes()
+            .then(negociacoes =>
+                negociacoes.filter(negociacao => 
+                    !this._listaNegociacoes.negociacoes.some(
+                        negociacaoExistente => JSON.stringify(negociacao) == JSON.stringify(negociacaoExistente)
+                    ))
+            )
             .then(negociacoes => {
                 negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
                 this._mensagem.texto = 'Negociações do período importadas com sucesso';
-            })
+            }) 
             .catch(error => this._mensagem.texto = error);  
     }
 

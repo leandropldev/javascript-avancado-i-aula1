@@ -4,7 +4,7 @@ class NegociacaoDAO {
         this._store = 'negociacoes';
     }
 
-    adiciona(negociacao){
+    adiciona(negociacao){ 
         return new Promise((resolve, reject) => {
             let request = this._connection
                 .transaction([this._store],'readwrite')
